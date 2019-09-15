@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { Container, Left, Avatar, Info, Name, Time } from './styles';
 
-export default function Appointment({ data }) {
+export default function Appointment({ data, onCancel }) {
     const dateParsed = useMemo(() => {
         return formatRelative(parseISO(data.date), new Date(), {
             locale: pt,
@@ -15,12 +15,12 @@ export default function Appointment({ data }) {
     }, [data.date]);
 
     return (
-        <Container>
+        <Container past={data.past}>
             <Left>
                 <Avatar
                     source={{
                         uri: data.provider.avatar
-                            ? //? data.provider.avatar.url
+                            ? // ? data.provider.avatar.url
                               data.provider.avatar.url.replace(
                                   'localhost',
                                   '10.0.2.2'
@@ -30,13 +30,15 @@ export default function Appointment({ data }) {
                 />
                 <Info>
                     <Name>{data.provider.name}</Name>
-                    <Time>em 3 horas</Time>
+                    <Time>{dateParsed}</Time>
                 </Info>
             </Left>
 
-            <TouchableOpacity onPres={() => {}}>
-                <Icon name="event-busy" size={20} color="#f64c75" />
-            </TouchableOpacity>
+            {data.cancelable && !data.canceled_at && (
+                <TouchableOpacity onPress={onCancel}>
+                    <Icon name="event-busy" size={20} color="#f64c75" />
+                </TouchableOpacity>
+            )}
         </Container>
     );
 }
